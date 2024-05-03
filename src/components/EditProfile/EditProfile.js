@@ -25,7 +25,6 @@ const EditProfile = () => {
             alert('Пароли не совпадают!');
             return;
         }
-        // Отправка обновленного пароля вместе с другой информацией
         dispatch(updateUser(formData));
         localStorage.setItem('currentUser', JSON.stringify({ ...user, ...formData }));
         alert('Профиль обновлен!');
