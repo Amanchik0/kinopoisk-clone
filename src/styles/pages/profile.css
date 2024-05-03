@@ -36,6 +36,16 @@
     font-size:16px ;
     text-decoration: none;
 }
+.profile-info button{ 
+    padding: 7px 20px ;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 500;
+    font-size:16px ;
+    text-decoration: none;
+}
 .profile-info-editButton{ 
     background: linear-gradient(90deg , #ff5c4d , #eb469f 26.56% , #8341ef 75%,#3f68f9) ;
 }

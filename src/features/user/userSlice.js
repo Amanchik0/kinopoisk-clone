@@ -1,5 +1,34 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+export const addFilm = createAsyncThunk(
+  'films/addFilm',
+  async (filmData, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      filmData.id = Date.now().toString(); // Уникальный ID для фильма
+      state.films.push(filmData); // Добавляем фильм в массив
+      localStorage.setItem('films', JSON.stringify(state.films)); // Обновляем localStorage
+      return filmData; // Возвращаем данные для обновления состояния
+    } catch (error) {
+      return rejectWithValue('Ошибка при добавлении фильма');
+    }
+  }
+);
+
+export const deleteFilm = createAsyncThunk(
+  'films/deleteFilm',
+  async (filmId, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const filteredFilms = state.films.filter(film => film.id !== filmId); // Удаляем фильм
+      localStorage.setItem('films', JSON.stringify(filteredFilms)); // Обновляем localStorage
+      return filmId; // Возвращаем ID удаленного фильма
+    } catch (error) {
+      return rejectWithValue('Ошибка при удалении фильма');
+    }
+  }
+);
+
 export const register = createAsyncThunk(
   'user/register',
   async ({ username, password, email, fullName }, { rejectWithValue }) => {
@@ -42,7 +71,7 @@ const userSlice = createSlice({
       password: 'adminpass',
       fullName: 'Admin User',
       isAdmin: true
-    }],
+    } ,],
     currentUser: null,
     isAuthenticated: false,
     error: null,
@@ -57,14 +86,23 @@ const userSlice = createSlice({
       localStorage.removeItem('watchList');
     },
     addToWatch: (state, action) => {
-      if (!state.watchList.includes(action.payload)) {
+      if (action.payload && !state.watchList.some(item => item.id === action.payload.id)) {
         state.watchList.push(action.payload);
         localStorage.setItem('watchList', JSON.stringify(state.watchList));
       }
     },
     removeFromToWatch: (state, action) => {
-      state.watchList = state.watchList.filter(item => item !== action.payload);
+      state.watchList = state.watchList.filter(item => item.id !== action.payload.id);
       localStorage.setItem('watchList', JSON.stringify(state.watchList));
+    },
+    updateUser: (state, action) => {
+      state.currentUser = { ...state.currentUser, ...action.payload };
+      const updatedUsers = state.users.map(user =>
+        user.id === state.currentUser.id ? { ...user, ...action.payload } : user
+      );
+      state.users = updatedUsers;
+      localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
     }
   },
   extraReducers: (builder) => {
@@ -85,5 +123,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { logout, addToWatch, removeFromToWatch } = userSlice.actions;
+export const { logout, addToWatch, removeFromToWatch, updateUser } = userSlice.actions;
 export default userSlice.reducer;
