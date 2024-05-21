@@ -1,6 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { Film, User } from '../../app/types';
+import { handleError } from '../../components/errorHandling';
+
+// Перечисление типов действий
+export enum UserActionTypes {
+  REGISTER = 'user/register',
+  LOGIN = 'user/login',
+  LOGOUT = 'user/logout',
+  ADD_TO_WATCH = 'user/addToWatch',
+  REMOVE_FROM_TO_WATCH = 'user/removeFromToWatch',
+  UPDATE_USER = 'user/updateUser',
+}
 
 interface UserState {
   users: User[];
@@ -21,7 +32,6 @@ const initialUsers: User[] = [
   }
 ];
 
-// Проверяем существующие данные в localStorage или используем начальные данные
 const savedUsers = JSON.parse(localStorage.getItem('users') || '[]');
 const users = savedUsers.length > 0 ? savedUsers : initialUsers;
 
@@ -33,13 +43,13 @@ const initialState: UserState = {
   watchList: JSON.parse(localStorage.getItem('watchList') || '[]')
 };
 
-// Если пользователей нет в localStorage, сохраняем начальных пользователей
 if (savedUsers.length === 0) {
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
 
+// Асинхронные действия
 export const register = createAsyncThunk(
-  'user/register',
+  UserActionTypes.REGISTER,
   async ({ username, password, email, fullName }: Omit<User, 'id' | 'isAdmin'>, { getState, rejectWithValue }) => {
     try {
       const state: RootState = getState() as RootState;
@@ -63,40 +73,45 @@ export const register = createAsyncThunk(
 );
 
 export const login = createAsyncThunk(
-  'user/login',
+  UserActionTypes.LOGIN,
   async ({ email, password }: { email: string; password: string }, { getState, rejectWithValue }) => {
-    const state: RootState = getState() as RootState;
-    const user = state.user.users.find(user => user.email === email && user.password === password);
-    if (user) {
-      return user;
-    } else {
-      return rejectWithValue('Invalid username/email or password');
+    try {
+      const state: RootState = getState() as RootState;
+      const user = state.user.users.find(user => user.email === email && user.password === password);
+      if (user) {
+        return user;
+      } else {
+        return rejectWithValue('Invalid username/email or password');
+      }
+    } catch (error) {
+      return rejectWithValue(handleError(error));
     }
   }
 );
 
+// Срез с Action Creators
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    logout: (state) => {
+    logout(state) {
       state.currentUser = null;
       state.isAuthenticated = false;
       localStorage.removeItem('currentUser');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('watchList');
     },
-    addToWatch: (state, action: PayloadAction<Film>) => {
+    addToWatch(state, action: PayloadAction<Film>) {
       if (action.payload && !state.watchList.some(item => item.id === action.payload.id)) {
         state.watchList.push(action.payload);
         localStorage.setItem('watchList', JSON.stringify(state.watchList));
       }
     },
-    removeFromToWatch: (state, action: PayloadAction<Film>) => {
+    removeFromToWatch(state, action: PayloadAction<Film>) {
       state.watchList = state.watchList.filter(item => item.id !== action.payload.id);
       localStorage.setItem('watchList', JSON.stringify(state.watchList));
     },
-    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+    updateUser(state, action: PayloadAction<Partial<User>>) {
       if (state.currentUser) {
         state.currentUser = { ...state.currentUser, ...action.payload };
         const updatedUsers = state.users.map(user =>

@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent, FormEvent } from 'react';
+import React, { Component, ChangeEvent, FormEvent, createRef, RefObject } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RootState, AppDispatch } from '../../app/store';
 import { addFilm, initializeFilms } from '../../features/films/filmsSlice';
@@ -12,6 +12,8 @@ interface AddFilmState {
 }
 
 class AddFilm extends Component<AddFilmProps, AddFilmState> {
+  private imageUrlRef: RefObject<HTMLInputElement>;
+
   constructor(props: AddFilmProps) {
     super(props);
     this.state = {
@@ -26,6 +28,8 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
       },
       message: ''
     };
+
+    this.imageUrlRef = createRef<HTMLInputElement>();
   }
 
   componentDidMount() {
@@ -92,6 +96,11 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
         imageUrl: ''
       }
     });
+
+    // Пример использования ref
+    if (this.imageUrlRef.current) {
+      this.imageUrlRef.current.value = '';
+    }
   };
 
   render() {
@@ -105,7 +114,7 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
             <h3>Новый фильм</h3>
             <fieldset className="fieldset">
               <label>URL картинки фильма</label>
-              <input type="text" name="imageUrl" value={filmData.imageUrl} onChange={this.handleChange} placeholder="Введите URL изображения" />
+              <input type="text" name="imageUrl" ref={this.imageUrlRef} value={filmData.imageUrl} onChange={this.handleChange} placeholder="Введите URL изображения" />
             </fieldset>
             <fieldset className="fieldset">
               <label>Название фильма на русском *</label>
@@ -129,7 +138,7 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
             </fieldset>
             <fieldset className="fieldset">
               <label>Жанр фильма *</label>
-              <select name="genre" value={filmData.genre?.id?.toString() || ''} onChange={this.handleChange} required>
+              <select name="genre" value={filmData.genre?.id.toString()} onChange={this.handleChange} required>
                 <option value="">Выберите жанр</option>
                 {genres.map(genre => (
                   <option key={genre.id} value={genre.id.toString()}>{genre.name}</option>

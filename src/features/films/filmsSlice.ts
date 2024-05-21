@@ -5,31 +5,9 @@ export enum FilmsActionTypes {
   ADD_FILM = 'films/addFilm',
   DELETE_FILM = 'films/deleteFilm',
   ADD_COMMENT = 'films/addCommentToFilm',
-  INITIALIZE = 'films/initializeFilms',
-  LOAD = 'films/loadFilms',
+  INITIALIZE_FILMS = 'films/initializeFilms',
+  LOAD_FILMS = 'films/loadFilms',
 }
-
-interface AddFilmAction {
-  type: typeof FilmsActionTypes.ADD_FILM;
-  payload: Film;
-}
-
-interface DeleteFilmAction {
-  type: typeof FilmsActionTypes.DELETE_FILM;
-  payload: number;
-}
-
-interface AddCommentAction {
-  type: typeof FilmsActionTypes.ADD_COMMENT;
-  payload: { filmId: number; comment: Comment };
-}
-
-interface InitializeFilmsAction {
-  type: typeof FilmsActionTypes.INITIALIZE;
-  payload: Film[];
-}
-
-type FilmsActions = AddFilmAction | DeleteFilmAction | AddCommentAction | InitializeFilmsAction;
 
 interface FilmsState {
   items: Film[];
@@ -75,11 +53,16 @@ if (initialState.items.length === 0) {
   initialState.items = [...initialFilms, ...initialState.items];
 }
 
-export const filmsSlice = createSlice({
+const calculateAverageRating = (comments: Comment[]): number => {
+  const totalRating = comments.reduce((total, comment) => total + comment.rate, 0);
+  return totalRating / comments.length;
+};
+
+const filmsSlice = createSlice({
   name: 'films',
   initialState,
   reducers: {
-    loadFilms: (state) => {
+    loadFilms(state) {
       const films = JSON.parse(localStorage.getItem('films') || '[]');
       if (films.length > 0) {
         state.items = [...initialFilms, ...films];
@@ -88,7 +71,7 @@ export const filmsSlice = createSlice({
         localStorage.setItem('films', JSON.stringify(initialFilms));
       }
     },
-    addCommentToFilm: (state, action: PayloadAction<{ filmId: number; comment: Comment }>) => {
+    addCommentToFilm(state, action: PayloadAction<{ filmId: number; comment: Comment }>) {
       const { filmId, comment } = action.payload;
       const film = state.items.find(film => film.id === filmId);
       if (film) {
@@ -96,22 +79,24 @@ export const filmsSlice = createSlice({
           film.comments = [];
         }
         film.comments.push(comment);
+        film.averageRating = calculateAverageRating(film.comments);
         localStorage.setItem('films', JSON.stringify(state.items));
       }
     },
-    addFilm: (state, action: PayloadAction<Film>) => {
+    addFilm(state, action: PayloadAction<Film>) {
       const newFilm: Film = {
         ...action.payload,
-        comments: action.payload.comments || []
+        comments: action.payload.comments || [],
+        averageRating: action.payload.averageRating || 0
       };
       state.items.push(newFilm);
       localStorage.setItem('films', JSON.stringify(state.items));
     },
-    deleteFilm: (state, action: PayloadAction<number>) => {
+    deleteFilm(state, action: PayloadAction<number>) {
       state.items = state.items.filter(film => film.id !== action.payload);
       localStorage.setItem('films', JSON.stringify(state.items));
     },
-    initializeFilms: (state, action: PayloadAction<Film[]>) => {
+    initializeFilms(state, action: PayloadAction<Film[]>) {
       state.items = action.payload;
       localStorage.setItem('films', JSON.stringify(state.items));
     }

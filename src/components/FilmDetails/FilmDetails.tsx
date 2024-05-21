@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useParams, Link, NavigateFunction } from 'react-router-dom';
+import { Link, NavigateFunction } from 'react-router-dom';
 import { connect, ConnectedProps } from 'react-redux';
 import { RootState, AppDispatch } from '../../app/store';
 import { addToWatch, removeFromToWatch } from '../../features/user/userSlice';
@@ -64,7 +64,7 @@ class FilmDetail extends Component<FilmDetailProps, FilmDetailState> {
         <div className="main-detail">
           <div className="detail">
             <div className="main-film-image">
-              <img src={film.imageUrl} alt="" />
+              <img src={film.imageUrl} alt={film.titleRus} />
             </div>
             <div className="main-film-info-detail">
               <h2>{film.titleRus}, {film.year}</h2>
@@ -87,8 +87,7 @@ class FilmDetail extends Component<FilmDetailProps, FilmDetailState> {
               </div>
               <div className='main-film-details'>
                 <p>Рейтинг</p>
-                {/* <p>{film.averageRate}</p> */}
-                {/* надо будет чуть позже написать  */}
+                <p>{film.averageRating}</p>
               </div>
             </div>
           </div>
@@ -106,7 +105,7 @@ class FilmDetail extends Component<FilmDetailProps, FilmDetailState> {
             </div>
           )}
           <div className="coments">
-            <h3>Комментарий</h3>
+            <h3>Комментарии</h3>
             <CommentForm filmId={film.id} />
             <CommentList rates={rates || []} />
           </div>

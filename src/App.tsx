@@ -15,6 +15,7 @@ import EditProfile from './components/EditProfile/EditProfile';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import AddGanre from './components/AddGanre/AddGanre';
 import PageNotFound from './components/PageNotFound';
+import ErrorBoundary from './ErrorBoundary';
 
 const App: React.FC = () => {
     const UserProfileWithNavigate = () => {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
       };
   return (
     <Router>
+       <ErrorBoundary>
       <NavBar />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -49,6 +51,7 @@ const App: React.FC = () => {
           }
         />
       </Routes>
+      </ErrorBoundary>
     </Router>
   );
 };

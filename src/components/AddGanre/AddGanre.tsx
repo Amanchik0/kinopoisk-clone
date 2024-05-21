@@ -74,13 +74,11 @@ class AddGanre extends Component<AddGanreProps, AddGanreState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({});
-
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   addGenre: (genre: Genre) => dispatch(addGenre(genre)),
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(null, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export default connector(AddGanre);

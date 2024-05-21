@@ -18,11 +18,11 @@ const LoginPage: React.FC = () => {
       alert("Please enter both email and password");
       return;
     }
-    await dispatch(login({ email, password })).unwrap();
-    if (isAuthenticated) {
+    const resultAction = await dispatch(login({ email, password }));
+    if (login.fulfilled.match(resultAction)) {
       navigate('/');
     } else {
-      alert('Ошибка входа');
+      alert('Ошибка входа: ' + (resultAction.payload || resultAction.error.message));
     }
   };
 

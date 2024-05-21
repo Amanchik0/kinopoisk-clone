@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { addToWatch, removeFromToWatch } from '../../features/user/userSlice';
@@ -23,6 +23,7 @@ interface Film {
   time: string;
   genre: Genre;
   imageUrl: string;
+  averageRating?: number; // Добавлено поле averageRating
 }
 
 const selectGenres = createSelector(
@@ -44,6 +45,7 @@ const HomePage: React.FC = () => {
   const genres = useSelector(selectGenres);
   const films = useSelector(selectFilms);
   const watchList = useSelector(selectWatchList);
+  const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
   const dispatch = useDispatch();
   const location = useLocation();
   const genreId = new URLSearchParams(location.search).get('genres');
@@ -66,6 +68,10 @@ const HomePage: React.FC = () => {
   }, [dispatch]);
 
   const toggleWatchList = (film: Film) => {
+    if (!isAuthenticated) {
+      alert('Вы должны войти в систему, чтобы добавлять фильмы в список.');
+      return;
+    }
     const isInWatchList = watchList.some(item => item.id === film.id);
     if (isInWatchList) {
       dispatch(removeFromToWatch(film));
@@ -104,7 +110,7 @@ const HomePage: React.FC = () => {
           {paginate(films, currentPage, pageSize)
             .filter((item: Film) => !genreId || item.genre.id === parseInt(genreId))
             .map((item: Film) => (
-              <div key={item.id} className="main-card">
+              <div key={`${item.id}-${item.titleEng}`} className="main-card">
                 <div className="main-card-left">
                   <div className="main-film-img">
                     <img src={item.imageUrl} alt={item.titleRus} />
@@ -120,7 +126,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="main-card-right">
                   <div className="main-card-right-rate">
-                    <p>7.3</p>
+                    <p>{item.averageRating ? item.averageRating.toFixed(1) : 'Нет рейтинга'}</p>
                   </div>
                 </div>
               </div>

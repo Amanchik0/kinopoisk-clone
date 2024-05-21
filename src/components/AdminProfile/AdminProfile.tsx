@@ -65,7 +65,6 @@ const AdminProfile: React.FC = () => {
                   <Link to={`/detail/${item.id}`}>{item.titleRus}</Link>
                   <p>{item.titleEng}, {item.year}, {item.time} мин</p>
                   <p> {item.genre?.name}</p>
-                  {/* <p>Автор: {item.author}</p> */}
                   <button className="main-card-info-button">
                     Смотреть
                   </button>
@@ -73,7 +72,7 @@ const AdminProfile: React.FC = () => {
               </div>
               <div className="main-card-right">
                 <div className="main-card-right-rate">
-                  <p>7.3</p>
+                  <p>{item.averageRating ? item.averageRating.toFixed(1) : 'N/A'}</p>
                 </div>
                 <div className="main-film-buttons">
                   <Link to={`/edit/${item.id}`}>Редактировать</Link>

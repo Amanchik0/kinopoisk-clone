@@ -76,7 +76,7 @@ class UserProfile extends Component<UserProfileProps> {
                 </div>
                 <div className="main-card-right">
                   <div className="main-card-right-rate">
-                    <p>7.3</p>
+                    <p>{film.averageRating ? film.averageRating.toFixed(1) : 'N/A'}</p>
                   </div>
                   <button className="main-card-info-button" onClick={() => this.toggleWatchList(film)}>
                     Сохранено

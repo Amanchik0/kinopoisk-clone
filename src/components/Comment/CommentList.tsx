@@ -5,12 +5,12 @@ interface Comment {
   author: string;
   text: string;
   rate: number;
+  userId: string; // Добавляем userId
 }
 
 interface CommentListProps {
   rates: Comment[];
 }
-
 
 const CommentList: React.FC<CommentListProps> = ({ rates }) => {
   if (!rates || rates.length === 0) {
@@ -23,19 +23,20 @@ const CommentList: React.FC<CommentListProps> = ({ rates }) => {
         <div key={index} className="coment">
           <p>Автор: <a href="#">{rate.author || 'Неизвестный'}</a></p>
           <div className="coments-stars">
-            {[...Array(5)].map((_, i) => (
-              <img key={i}
+            {[...Array(10)].map((_, i) => (
+              <img 
+                key={i}
                 src={star}
                 alt=""
                 className={i < rate.rate ? 'active-stars' : ''}
-           />
-         ))}
-       </div>
-       {rate.text && <p>Комментарий: {rate.text}</p>}
-     </div>
-   ))}
- </div>
-);
+              />
+            ))}
+          </div>
+          {rate.text && <p>Комментарий: {rate.text}</p>}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default CommentList;
