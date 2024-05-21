@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "target": "es5",                                 
+      "module": "esnext",                              
+      "strict": true,                                  
+      "jsx": "react-jsx",                              
+      "esModuleInterop": true,                         
+      "skipLibCheck": true,                            
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "allowJs": true,                                 
+      "noEmit": true,                                  
+      "isolatedModules": true,
+      "resolveJsonModule": true,
+      "outDir": "./build"
+    },
+    "include": ["src/**/*"]
+  }
+  
