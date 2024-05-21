@@ -1,57 +1,86 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { Component, ChangeEvent, FormEvent } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { RootState, AppDispatch } from '../../app/store';
 import { addGenre } from '../../features/genres/genresSlice';
-import { AppDispatch } from '../../app/store';
+import { Genre } from '../../app/types';
 
-const AddGanre: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [genreName, setGenreName] = useState('');
-  const [message, setMessage] = useState('');
+interface AddGanreProps extends PropsFromRedux {}
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setGenreName(event.target.value);
+interface AddGanreState {
+  genreName: string;
+  message: string;
+}
+
+class AddGanre extends Component<AddGanreProps, AddGanreState> {
+  constructor(props: AddGanreProps) {
+    super(props);
+    this.state = {
+      genreName: '',
+      message: ''
+    };
+  }
+
+  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ genreName: event.target.value });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const { addGenre } = this.props;
+    const { genreName } = this.state;
+
     if (!genreName.trim()) {
-      setMessage('Пожалуйста, введите название жанра.');
+      this.setState({ message: 'Пожалуйста, введите название жанра.' });
       return;
     }
-    dispatch(addGenre({
+
+    addGenre({
       id: Date.now(),
       name: genreName.trim(),
-    }));
-    setMessage('Жанр успешно добавлен!');
-    setGenreName('');
-    setTimeout(() => setMessage(''), 3000); // Скрыть сообщение после 3 секунд
+    });
+
+    this.setState({ message: 'Жанр успешно добавлен!', genreName: '' });
+    setTimeout(() => this.setState({ message: '' }), 3000); // Скрыть сообщение после 3 секунд
   };
 
-  return (
-    <div className="container">
-      <div className="main">
-        <form onSubmit={handleSubmit} className="form">
-          <h3>Добавить новый жанр</h3>
-          <fieldset className="fieldset">
-            <label>Название жанра</label>
-            <input
-              type="text"
-              name="genreName"
-              value={genreName}
-              onChange={handleChange}
-              placeholder="Введите название жанра"
-            />
-          </fieldset>
-          <fieldset className="fieldset">
-            <button type="submit" className="fieldset-button">
-              Добавить
-            </button>
-            {message && <div className="message">{message}</div>}
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  );
-};
+  render() {
+    const { genreName, message } = this.state;
 
-export default AddGanre;
+    return (
+      <div className="container">
+        <div className="main">
+          <form onSubmit={this.handleSubmit} className="form">
+            <h3>Добавить новый жанр</h3>
+            <fieldset className="fieldset">
+              <label>Название жанра</label>
+              <input
+                type="text"
+                name="genreName"
+                value={genreName}
+                onChange={this.handleChange}
+                placeholder="Введите название жанра"
+              />
+            </fieldset>
+            <fieldset className="fieldset">
+              <button type="submit" className="fieldset-button">
+                Добавить
+              </button>
+              {message && <div className="message">{message}</div>}
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state: RootState) => ({});
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  addGenre: (genre: Genre) => dispatch(addGenre(genre)),
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(AddGanre);

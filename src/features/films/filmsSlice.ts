@@ -1,6 +1,36 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Genre, Comment, Film } from '../../app/types';
 
+export enum FilmsActionTypes {
+  ADD_FILM = 'films/addFilm',
+  DELETE_FILM = 'films/deleteFilm',
+  ADD_COMMENT = 'films/addCommentToFilm',
+  INITIALIZE = 'films/initializeFilms',
+  LOAD = 'films/loadFilms',
+}
+
+interface AddFilmAction {
+  type: typeof FilmsActionTypes.ADD_FILM;
+  payload: Film;
+}
+
+interface DeleteFilmAction {
+  type: typeof FilmsActionTypes.DELETE_FILM;
+  payload: number;
+}
+
+interface AddCommentAction {
+  type: typeof FilmsActionTypes.ADD_COMMENT;
+  payload: { filmId: number; comment: Comment };
+}
+
+interface InitializeFilmsAction {
+  type: typeof FilmsActionTypes.INITIALIZE;
+  payload: Film[];
+}
+
+type FilmsActions = AddFilmAction | DeleteFilmAction | AddCommentAction | InitializeFilmsAction;
+
 interface FilmsState {
   items: Film[];
   loading: boolean;

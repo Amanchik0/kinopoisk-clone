@@ -1,125 +1,163 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addFilm, initializeFilms } from '../../features/films/filmsSlice';
+import React, { Component, ChangeEvent, FormEvent } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { RootState, AppDispatch } from '../../app/store';
+import { addFilm, initializeFilms } from '../../features/films/filmsSlice';
+import { Genre, Film } from '../../app/types';
 
-interface Genre {
-  id: number;
-  name: string;
+interface AddFilmProps extends PropsFromRedux {}
+
+interface AddFilmState {
+  filmData: Partial<Film>;
+  message: string;
 }
 
-interface Film {
-  id: number;
-  titleRus: string;
-  titleEng: string;
-  year: string;
-  time: string;
-  linkForTrailer: string;
-  genre: Genre;
-  imageUrl: string;
-}
+class AddFilm extends Component<AddFilmProps, AddFilmState> {
+  constructor(props: AddFilmProps) {
+    super(props);
+    this.state = {
+      filmData: {
+        titleRus: '',
+        titleEng: '',
+        year: '',
+        time: '',
+        linkForTrailer: '',
+        genre: {} as Genre,
+        imageUrl: ''
+      },
+      message: ''
+    };
+  }
 
-const AddFilmForm: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const films = useSelector((state: RootState) => state.films.items);
-  const genres = useSelector((state: RootState) => state.genres.items);
-  const [filmData, setFilmData] = useState<Partial<Film>>({
-    titleRus: '',
-    titleEng: '',
-    year: '',
-    time: '',
-    linkForTrailer: '',
-    genre: {} as Genre,
-    imageUrl: ''
-  });
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
+  componentDidMount() {
+    const { dispatch } = this.props;
     const savedFilms = localStorage.getItem('films');
     if (savedFilms) {
       dispatch(initializeFilms(JSON.parse(savedFilms)));
     }
-  }, [dispatch]);
+  }
 
-  useEffect(() => {
-    localStorage.setItem('films', JSON.stringify(films));
-  }, [films]);
+  componentDidUpdate(prevProps: AddFilmProps) {
+    const { films } = this.props;
+    if (prevProps.films !== films) {
+      localStorage.setItem('films', JSON.stringify(films));
+    }
+  }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
-    setFilmData({ ...filmData, [name]: value });
+    const { genres } = this.props;
+    if (name === 'genre') {
+      const genre = genres.find(g => g.id.toString() === value);
+      this.setState(prevState => ({
+        filmData: {
+          ...prevState.filmData,
+          genre: genre!
+        }
+      }));
+    } else {
+      this.setState(prevState => ({
+        filmData: {
+          ...prevState.filmData,
+          [name]: value
+        }
+      }));
+    }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const { addFilm } = this.props;
+    const { filmData } = this.state;
+
     if (!filmData.titleRus || !filmData.titleEng || !filmData.genre) {
-      setMessage('Пожалуйста, заполните все обязательные поля.');
+      this.setState({ message: 'Пожалуйста, заполните все обязательные поля.' });
       return;
     }
-    dispatch(addFilm({
+
+    addFilm({
       id: Date.now(), // генерация уникального ID для нового фильма
-      ...filmData,
-      genre: genres.find(genre => genre.id.toString() === filmData.genre?.id.toString())!
-    } as Film));
-    setMessage('Фильм успешно добавлен!');
-    setTimeout(() => setMessage(''), 3000); // Скрыть сообщение после 3 секунд
-    setFilmData({
-      titleRus: '',
-      titleEng: '',
-      year: '',
-      time: '',
-      linkForTrailer: '',
-      genre: {} as Genre,
-      imageUrl: ''
+      ...filmData
+    } as Film);
+
+    this.setState({ message: 'Фильм успешно добавлен!' });
+    setTimeout(() => this.setState({ message: '' }), 3000); // Скрыть сообщение после 3 секунд
+    this.setState({
+      filmData: {
+        titleRus: '',
+        titleEng: '',
+        year: '',
+        time: '',
+        linkForTrailer: '',
+        genre: {} as Genre,
+        imageUrl: ''
+      }
     });
   };
 
-  return (
-    <div className="container">
-      <div className="main">
-        <form onSubmit={handleSubmit} className="form">
-          <h3>Новый фильм</h3>
-          <fieldset className="fieldset">
-            <label>URL картинки фильма</label>
-            <input type="text" name="imageUrl" value={filmData.imageUrl} onChange={handleChange} placeholder="Введите URL изображения" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Название фильма на русском *</label>
-            <input type="text" name="titleRus" value={filmData.titleRus} onChange={handleChange} placeholder="Введите название фильма на русском" required />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Название фильма на английском *</label>
-            <input type="text" name="titleEng" value={filmData.titleEng} onChange={handleChange} placeholder="Введите название фильма на английском" required />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Год выпуска</label>
-            <input type="text" name="year" value={filmData.year} onChange={handleChange} placeholder="Введите год выпуска фильма" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Длительность фильма</label>
-            <input type="text" name="time" value={filmData.time} onChange={handleChange} placeholder="Введите длительность фильма" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Ссылка на трейлер</label>
-            <input type="text" name="linkForTrailer" value={filmData.linkForTrailer} onChange={handleChange} placeholder="Введите ссылку на трейлер" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label>Жанр фильма *</label>
-            <select name="genreId" value={filmData.genre?.id.toString()} onChange={handleChange} required>
-              <option value="">Выберите жанр</option>
-              {genres.map(genre => (
-                <option key={genre.id} value={genre.id}>{genre.name}</option>
-              ))}
-            </select>
-          </fieldset>
-          <fieldset className="fieldset">
-            <button type="submit" className="fieldset-button">Добавить</button>
-            {message && <div className="message">{message}</div>}
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  );
-};
+  render() {
+    const { filmData, message } = this.state;
+    const { genres } = this.props;
 
-export default AddFilmForm;
+    return (
+      <div className="container">
+        <div className="main">
+          <form onSubmit={this.handleSubmit} className="form">
+            <h3>Новый фильм</h3>
+            <fieldset className="fieldset">
+              <label>URL картинки фильма</label>
+              <input type="text" name="imageUrl" value={filmData.imageUrl} onChange={this.handleChange} placeholder="Введите URL изображения" />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Название фильма на русском *</label>
+              <input type="text" name="titleRus" value={filmData.titleRus} onChange={this.handleChange} placeholder="Введите название фильма на русском" required />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Название фильма на английском *</label>
+              <input type="text" name="titleEng" value={filmData.titleEng} onChange={this.handleChange} placeholder="Введите название фильма на английском" required />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Год выпуска</label>
+              <input type="text" name="year" value={filmData.year} onChange={this.handleChange} placeholder="Введите год выпуска фильма" />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Длительность фильма</label>
+              <input type="text" name="time" value={filmData.time} onChange={this.handleChange} placeholder="Введите длительность фильма" />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Ссылка на трейлер</label>
+              <input type="text" name="linkForTrailer" value={filmData.linkForTrailer} onChange={this.handleChange} placeholder="Введите ссылку на трейлер" />
+            </fieldset>
+            <fieldset className="fieldset">
+              <label>Жанр фильма *</label>
+              <select name="genre" value={filmData.genre?.id?.toString() || ''} onChange={this.handleChange} required>
+                <option value="">Выберите жанр</option>
+                {genres.map(genre => (
+                  <option key={genre.id} value={genre.id.toString()}>{genre.name}</option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset className="fieldset">
+              <button type="submit" className="fieldset-button">Добавить</button>
+              {message && <div className="message">{message}</div>}
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state: RootState) => ({
+  films: state.films.items,
+  genres: state.genres.items,
+});
+
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  addFilm: (film: Film) => dispatch(addFilm(film)),
+  dispatch,
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(AddFilm);
