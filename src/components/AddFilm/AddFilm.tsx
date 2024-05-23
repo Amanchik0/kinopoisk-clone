@@ -79,12 +79,12 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
     }
 
     addFilm({
-      id: Date.now(), // генерация уникального ID для нового фильма
+      id: Date.now(), 
       ...filmData
     } as Film);
 
     this.setState({ message: 'Фильм успешно добавлен!' });
-    setTimeout(() => this.setState({ message: '' }), 3000); // Скрыть сообщение после 3 секунд
+    setTimeout(() => this.setState({ message: '' }), 3000); 
     this.setState({
       filmData: {
         titleRus: '',
@@ -97,7 +97,6 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
       }
     });
 
-    // Пример использования ref
     if (this.imageUrlRef.current) {
       this.imageUrlRef.current.value = '';
     }
@@ -138,7 +137,7 @@ class AddFilm extends Component<AddFilmProps, AddFilmState> {
             </fieldset>
             <fieldset className="fieldset">
               <label>Жанр фильма *</label>
-              <select name="genre" value={filmData.genre?.id.toString()} onChange={this.handleChange} required>
+              <select name="genre" value={filmData.genre?.id?.toString() || ''} onChange={this.handleChange} required>
                 <option value="">Выберите жанр</option>
                 {genres.map(genre => (
                   <option key={genre.id} value={genre.id.toString()}>{genre.name}</option>

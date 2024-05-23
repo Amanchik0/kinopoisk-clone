@@ -1,4 +1,3 @@
-// Существующие типы
 export interface Genre {
   id: number;
   name: string;
@@ -8,7 +7,7 @@ export interface Comment {
   author: string;
   text: string;
   rate: number;
-  userId: string;   
+  userId: string | number ;   
 
 }
 

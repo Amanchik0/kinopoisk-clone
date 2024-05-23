@@ -3,7 +3,6 @@ import { RootState } from '../../app/store';
 import { Film, User } from '../../app/types';
 import { handleError } from '../../components/errorHandling';
 
-// Перечисление типов действий
 export enum UserActionTypes {
   REGISTER = 'user/register',
   LOGIN = 'user/login',
@@ -47,7 +46,6 @@ if (savedUsers.length === 0) {
   localStorage.setItem('users', JSON.stringify(initialUsers));
 }
 
-// Асинхронные действия
 export const register = createAsyncThunk(
   UserActionTypes.REGISTER,
   async ({ username, password, email, fullName }: Omit<User, 'id' | 'isAdmin'>, { getState, rejectWithValue }) => {
@@ -89,7 +87,6 @@ export const login = createAsyncThunk(
   }
 );
 
-// Срез с Action Creators
 const userSlice = createSlice({
   name: 'user',
   initialState,

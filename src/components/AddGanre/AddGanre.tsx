@@ -40,7 +40,7 @@ class AddGanre extends Component<AddGanreProps, AddGanreState> {
     });
 
     this.setState({ message: 'Жанр успешно добавлен!', genreName: '' });
-    setTimeout(() => this.setState({ message: '' }), 3000); // Скрыть сообщение после 3 секунд
+    setTimeout(() => this.setState({ message: '' }), 3000); 
   };
 
   render() {

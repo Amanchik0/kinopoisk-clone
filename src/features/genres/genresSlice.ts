@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Genre } from '../../app/types';
 
-// Перечисление типов действий
 export enum GenresActionTypes {
   ADD_GENRE = 'genres/addGenre',
   LOAD_GENRES = 'genres/loadGenres',

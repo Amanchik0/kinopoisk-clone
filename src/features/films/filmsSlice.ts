@@ -18,22 +18,22 @@ interface FilmsState {
 const initialFilms: Film[] = [
   {
     id: 1,
-    imageUrl: 'https://example.com/image1.jpg',
-    titleRus: 'Фильм 1',
-    titleEng: 'Film 1',
-    year: '2020',
-    time: '120 мин',
-    genre: { id: 1, name: 'Боевик' },
+    imageUrl: 'https://i.artfile.ru/1920x1080_681844_[www.ArtFile.ru].jpg',
+    titleRus: 'Хоббиты ',
+    titleEng: 'Hobbit an unexepted  jorney',
+    year: '2013',
+    time: '180 мин',
+    genre: { id: 10, name: 'Фэнтези' },
     comments: [],
     linkForTrailer: 'some-link'
   },
   {
     id: 2,
-    imageUrl: 'https://example.com/image2.jpg',
-    titleRus: 'Фильм 2',
-    titleEng: 'Film 2',
-    year: '2021',
-    time: '130 мин',
+    imageUrl: 'https://thumbs.filmix.biz/posters/2140/orig/24-skrin-vlastelin-kolec-bratstvo-kolca-2001_4692.jpg',
+    titleRus: 'Властелин колец: Братство Кольца' , 
+    titleEng: 'The Lord of the Rings: The Fellowship of the Ring',
+    year: '2001',
+    time: '178 мин',
     genre: { id: 2, name: 'Комедия' },
     comments: [],
     linkForTrailer: 'some-link'

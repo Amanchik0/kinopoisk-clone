@@ -1,12 +1,6 @@
 import React from 'react';
 import star from '../../styles/images/icons/star.svg';
-
-interface Comment {
-  author: string;
-  text: string;
-  rate: number;
-  userId: string; // Добавляем userId
-}
+import { Comment } from '../../app/types';
 
 interface CommentListProps {
   rates: Comment[];

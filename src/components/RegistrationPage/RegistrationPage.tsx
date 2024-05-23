@@ -82,6 +82,8 @@ const RegistrationPage: React.FC = () => {
           <fieldset className="fieldset">
             <button type="submit" className="fieldset-button">Регистрация</button>
           </fieldset>
+          <p>У вас уже есть аккаунт? <a href="/login">Войти</a></p>
+
         </form>
       </div>
     </div>

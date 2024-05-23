@@ -39,9 +39,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       alert('Пароли не совпадают!');
       return;
     }
-    // Обновление данных пользователя без передачи пароля
     this.props.updateUser({ fullName, email, image });
-    // Обновление данных пользователя в localStorage
     const updatedUser = { ...this.props.user, fullName, email, image };
     if (password) {
       updatedUser.password = password;

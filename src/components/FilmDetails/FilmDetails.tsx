@@ -1,3 +1,4 @@
+// FilmDetails.tsx
 import React, { Component } from 'react';
 import { Link, NavigateFunction } from 'react-router-dom';
 import { connect, ConnectedProps } from 'react-redux';

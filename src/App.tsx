@@ -6,7 +6,6 @@ import './styles/all.css';
 import LoginPage from './components/LoginPage/LoginPage';
 import RegistrationPage from './components/RegistrationPage/RegistrationPage';
 import HomePage from './components/Homepage/HomePage';
-// import AdminPanel from './components/AdminPanel/AdminPanel';
 import AddFilm from './components/AddFilm/AddFilm';
 import FilmDetail from './components/FilmDetails/FilmDetails';
 import AdminProfile from './components/AdminProfile/AdminProfile';

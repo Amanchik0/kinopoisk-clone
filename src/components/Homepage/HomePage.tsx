@@ -23,7 +23,7 @@ interface Film {
   time: string;
   genre: Genre;
   imageUrl: string;
-  averageRating?: number; // Добавлено поле averageRating
+  averageRating?: number; 
 }
 
 const selectGenres = createSelector(
